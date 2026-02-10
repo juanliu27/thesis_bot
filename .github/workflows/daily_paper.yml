@@ -1,0 +1,30 @@
+name: Daily Paper Bot
+
+on:
+  schedule:
+    # 9:00 AM EST (Eastern Standard Time) = 14:00 UTC
+    - cron: '0 14 * * *'
+  workflow_dispatch: # Allows you to trigger it manually whenever you want
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install arxiv==2.1.0
+
+      - name: Run script
+        env:
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
+        run: python paper_bot.py
