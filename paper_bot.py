@@ -6,16 +6,24 @@ from email.header import Header
 
 # 1. search
 def get_papers():
-    keywords = '("ai governance" OR "ai policy" OR "ai risk" OR "ai ethics" OR "ai benchmark")'
+    query = '("ai governance" OR "ai policy" OR "ai risk" OR "ai ethics" OR "ai benchmark")'
+    
+    client = arxiv.Client(
+        page_size=10,
+        delay_seconds=3.0,
+        num_retries=3
+    )
+    
     search = arxiv.Search(
-        query=keywords,
-        max_results=5,
+        query=query,
+        max_results=5, 
         sort_by=arxiv.SortCriterion.SubmittedDate
     )
     
     results = []
-    for r in search.results():
+    for r in client.results(search):
         results.append(f"【{r.title}】\n链接: {r.pdf_url}\n摘要: {r.summary[:200]}...")
+    
     return "\n\n---\n\n".join(results)
 
 # 2. email
